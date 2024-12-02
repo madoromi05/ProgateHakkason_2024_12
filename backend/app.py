@@ -4,27 +4,29 @@ import boto3
 import uuid
 
 app = Flask(__name__)
-CORS(app)
+CORS(app)  # フロントエンドとの通信を許可
 
-# AWS DynamoDB のクライアント
-dynamodb = boto3.resource('dynamodb', region_name='your-region')  # 例: us-west-2
+# DynamoDB クライアントを設定
+dynamodb = boto3.resource('dynamodb', region_name='ap-northeast-1')
 table = dynamodb.Table('Users')
 
 @app.route('/register', methods=['POST'])
 def register_user():
     try:
-        data = request.json
-        user_id = str(uuid.uuid4())  # 一意のIDを生成
-        user_data = {
-            'userId': user_id,
-            'name': data['name'],
-            'email': data['email'],
-            'age': data['age']
-        }
+        data = request.json  # JSONデータを取得
+        user_id = str(uuid.uuid4())  # ランダムなUUIDを生成
+        name = data.get('name')
+        email = data.get('email')
 
-        # DynamoDB にデータを保存
-        table.put_item(Item=user_data)
-        return jsonify({'message': 'User registered successfully!', 'userId': user_id}), 200
+        # データをDynamoDBに保存
+        table.put_item(
+            Item={
+                'id': user_id,
+                'name': name,
+                'email': email
+            }
+        )
+        return jsonify({'message': 'User registered successfully!', 'user_id': user_id}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

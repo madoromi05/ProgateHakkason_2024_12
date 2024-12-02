@@ -1,30 +1,4 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-
-function App() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    age: '',
-  });
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post('http://localhost:5000/register', formData);
-      alert(`User registered! User ID: ${response.data.userId}`);
-    } catch (error) {
-      console.error(error);
-      alert('Error registering user');
-    }
-  };
 
   return (
     <div>
@@ -58,6 +32,5 @@ function App() {
       </form>
     </div>
   );
-}
 
 export default App;
