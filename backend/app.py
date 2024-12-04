@@ -10,9 +10,12 @@ bcrypt = Bcrypt(app)
 CORS(app)
 
 # DynamoDB Client
-dynamodb = boto3.resource('dynamodb', region_name='us-east-1')  # 必要に応じてリージョンを変更
+#リージョン東京
+dynamodb = boto3.resource('dynamodb', region_name='ap-northeast-1')
+#テーブル名Users
 table = dynamodb.Table('Users')
 
+#接続確認用
 @app.route('/')
 def hello_world():
     return "Hello, World!"
@@ -26,7 +29,7 @@ def register():
     # パスワードをハッシュ化
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
-    # DynamoDBに登録
+    # DynamoDB登録
     try:
         table.put_item(
             Item={
