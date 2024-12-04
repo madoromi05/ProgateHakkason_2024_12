@@ -1,0 +1,17 @@
+.timeline-container {
+    padding: 20px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+  }
+  
+  .timeline-container h1 {
+    font-size: 24px;
+    color: #333;
+  }
+  
+  .timeline-container p {
+    font-size: 16px;
+    color: #666;
+  }
+  
