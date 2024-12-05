@@ -6,8 +6,8 @@ import Home from './components/Home';
 import Posts from './components/Posts';
 import About from './components/About';
 import Contact from './components/Contact';
-import LoginForm from './components/LoginFrom';
-import RegisterForm from './components/RegisterForm';
+import LoginForm from './components/LoginForm.jsx';
+import RegisterForm from './components/RegisterForm.jsx';
 
 
 
@@ -19,10 +19,11 @@ function App() {
             <Routes>
                 <Route path="/" element={<Home/>}/>
                 <Route path="/profile" element={<Profile/>}/>
-                {/*<Route path="/posts" element={<Posts/>}/>*/}
-                {/*<Route path="/about" element={<About/>}/>*/}
-                {/*<Route path="/contact" element={<Contact/>}/>*/}
-
+                <Route path="/posts" element={<Posts/>}/>
+                <Route path="/about" element={<About/>}/>
+                <Route path="/contact" element={<Contact/>}/>
+                <Route path="/login" element={<LoginForm/>}/>
+                <Route path="/register" element={<RegisterForm/>}/>
             </Routes>
         </Router>
       

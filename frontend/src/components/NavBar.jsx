@@ -21,6 +21,12 @@ function NavBar() {
                 <li>
                     <Link to="/contact">お問い合わせ</Link>
                 </li>
+                <li>
+                    <Link to="/login">ログイン</Link>
+                </li>
+                <li>
+                    <Link to="/register">登録</Link>
+                </li>
             </ul>
         </nav>
 
