@@ -40,3 +40,22 @@
 .read-the-docs {
   color: #888;
 }
+
+.result_button {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.result_button a {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.result_button a:hover {
+  background-color: #45a049;
+}
