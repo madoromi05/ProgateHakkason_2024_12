@@ -246,6 +246,39 @@ def delete_post(post_id):
         
     return jsonify({'success': True})
 
+# ... 既存のコード ...
+
+@app.route("/profile/<username>")
+def profile(username):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        # ユーザー情報を取得
+        cursor.execute('SELECT * FROM users WHERE username = ?', (username,))
+        user = cursor.fetchone()
+
+        if not user:
+            flash("ユーザーが見つかりません。")
+            return redirect(url_for('timeline'))
+
+        # ユーザーの投稿を取得
+        cursor.execute('''
+            SELECT posts.*, COUNT(DISTINCT likes.id) as like_count, COUNT(DISTINCT comments.id) as comment_count
+            FROM posts
+            LEFT JOIN likes ON posts.id = likes.post_id
+            LEFT JOIN comments ON posts.id = comments.post_id
+            WHERE posts.user_id = ?
+            GROUP BY posts.id
+            ORDER BY posts.created_at DESC
+        ''', (user['id'],))
+        user_posts = cursor.fetchall()
+
+    return render_template('profile.html', user=user, posts=user_posts)
+
+# ... 既存のコード ...
+
 # データベース初期化
 def init_db():
     with get_db_connection() as conn:
