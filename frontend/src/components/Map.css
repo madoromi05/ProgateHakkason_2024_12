@@ -1,0 +1,38 @@
+.map-section {
+    margin-top: 30px;
+    color: #ffffff;
+}
+
+.map-container {
+    height: 400px;
+    width: 100%;
+    border-radius: 12px;
+}
+
+.popup-content {
+    text-align: center;
+}
+
+.popup-images {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.popup-image-container {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.popup-image-container:hover {
+    transform: scale(1.05);
+}
+
+.popup-image {
+    width: 100px;
+    height: 66px;
+    object-fit: cover;
+    border-radius: 4px;
+}
