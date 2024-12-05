@@ -1,0 +1,128 @@
+.profile-container {
+    max-width: 935px; /* インスタの最大幅に近づける */
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #121212;
+    color: #ffffff;
+    font-family: 'Roboto', sans-serif;
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.profile-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 30px;
+    border: 4px solid #ffffff;
+}
+
+.profile-info {
+    flex: 1;
+}
+
+.profile-info h2 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.profile-stats {
+    display: flex;
+    gap: 40px;
+    margin-top: 10px;
+}
+
+.profile-stats span {
+    font-size: 16px;
+    color: #dddddd;
+}
+
+.profile-bio {
+    margin-bottom: 30px;
+    font-size: 16px;
+    color: #cccccc;
+}
+
+.profile-posts h3 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(293px, 1fr));
+    gap: 28px;
+}
+
+.post {
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.post:hover {
+    transform: scale(1.02);
+}
+
+.post img {
+    width: 100%;
+    height: 293px;
+    object-fit: cover;
+    border-radius: 3px;
+}
+
+.post-description {
+    margin-top: 8px;
+    font-size: 14px;
+    color: #cccccc;
+}
+
+/* モバイル対応 */
+@media (max-width: 768px) {
+    .profile-header {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .profile-image {
+        margin-right: 0;
+        margin-bottom: 20px;
+    }
+
+    .posts-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
+    }
+}
+/* 既存のスタイル */
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+    .profile-container {
+        padding: 20px;
+    }
+
+    .profile-header {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .profile-image {
+        margin-right: 0;
+        margin-bottom: 20px;
+    }
+
+    .profile-stats {
+        gap: 20px;
+    }
+
+    .posts-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 20px;
+    }
+}
