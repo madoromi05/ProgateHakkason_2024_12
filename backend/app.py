@@ -3,6 +3,7 @@ from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 import boto3
 import os
+import uuid
 
 # Flask Setup
 app = Flask(__name__)
@@ -25,6 +26,7 @@ def register():
     data = request.json
     username = data['username']
     password = data['password']
+    user_id = str(uuid.uuid4())
 
     # パスワードをハッシュ化
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
@@ -34,6 +36,7 @@ def register():
         table.put_item(
             Item={
                 'username': username,
+                 'userId': user_id,
                 'password': hashed_password
             }
         )
