@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './timeline.css';
 
 // ダミーデータの定義
@@ -24,6 +24,28 @@ const dummyData = [
 ];
 
 function Timeline() {
+  // 状態を保持するための useState
+  const [likes, setLikes] = useState(
+    dummyData.map((item) => ({
+      isLiked: false, // 初期状態はいいねされていない
+      count: item.likes
+    }))
+  );
+
+  // いいねボタンを押したときの処理
+  const handleLike = (index) => {
+    setLikes((prevLikes) =>
+      prevLikes.map((like, i) =>
+        i === index
+          ? {
+              isLiked: !like.isLiked, // いいね状態を反転
+              count: like.isLiked ? like.count - 1 : like.count + 1 // カウントの増減
+            }
+          : like
+      )
+    );
+  };
+
   return (
     <div className="timeline-container">
       {dummyData.map((item, index) => (
@@ -47,7 +69,12 @@ function Timeline() {
           
           {/* いいねマーク */}
           <div className="like-section">
-            <span className="like-icon">👍</span> {item.likes} いいね
+            <button
+              className={`like-button ${likes[index].isLiked ? 'liked' : ''}`}
+              onClick={() => handleLike(index)}
+            >
+              {likes[index].isLiked ? '❤️' : '🤍'} {likes[index].count} いいね
+            </button>
           </div>
         </div>
       ))}

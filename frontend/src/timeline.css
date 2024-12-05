@@ -1,3 +1,4 @@
+/* タイムライン全体のコンテナ */
 .timeline-container {
   display: flex;
   flex-direction: column;
@@ -6,6 +7,7 @@
   background-color: #f9f9f9;
 }
 
+/* 各投稿のアイテム */
 .timeline-item {
   width: 400px;
   background-color: white;
@@ -16,6 +18,7 @@
   overflow: hidden;
 }
 
+/* ユーザ情報のコンテナ */
 .user-info {
   display: flex;
   align-items: center;
@@ -23,27 +26,31 @@
   border-bottom: 1px solid #eee;
 }
 
+/* ユーザーアイコンのスタイル */
 .user-icon {
   width: 40px;
   height: 40px;
-  background-color: #ddd;
   border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 24px;
-  font-weight: bold;
+  overflow: hidden;
   margin-right: 10px;
 }
 
+.user-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ユーザーネームのスタイル */
 .user-name {
   font-size: 16px;
   font-weight: bold;
 }
 
+/* 写真または空欄のスタイル */
 .photo-placeholder {
   width: 100%;
-  height: 200px; /* 写真の空欄の高さを指定 */
+  height: 200px;
   background-color: #f0f0f0;
   display: flex;
   justify-content: center;
@@ -53,6 +60,13 @@
   font-style: italic;
 }
 
+.photo-placeholder img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* いいねセクション */
 .like-section {
   display: flex;
   align-items: center;
@@ -61,7 +75,21 @@
   color: #555;
 }
 
-.like-icon {
-  font-size: 20px;
-  margin-right: 5px;
+/* いいねボタンのスタイル */
+.like-button {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  color: #555;
+}
+
+.like-button.liked {
+  color: red; /* いいね状態の色 */
+}
+
+.like-button:hover {
+  opacity: 0.8; /* ホバー時の透明度 */
 }
