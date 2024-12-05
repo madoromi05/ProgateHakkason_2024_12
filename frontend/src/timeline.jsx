@@ -12,7 +12,7 @@ const dummyData = [
   {
     icon: 'https://via.placeholder.com/40',
     username: '2',
-    photo: null, // 写真がない場合
+    photo: 'https://via.placeholder.com/300', // 写真がない場合
     likes: 5
   },
   {
