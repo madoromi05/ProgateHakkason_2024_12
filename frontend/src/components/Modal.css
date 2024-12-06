@@ -4,7 +4,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.75);
+    background-color: rgba(0, 0, 0, 0.85);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -13,20 +13,22 @@
 
 .modal-content {
     position: relative;
-    background-color: #ffffff;
-    padding: 2rem;
+    background-color: #1e1e1e;
+    padding: 20px;
     border-radius: 8px;
-    max-width: 90%;
-    max-height: 90%;
-    overflow-y: auto;
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow: auto;
 }
 
-.modal-close-button {
+.modal-close {
     position: absolute;
-    top: 1rem;
-    right: 1rem;
+    top: 10px;
+    right: 10px;
     background: none;
     border: none;
-    font-size: 1.5rem;
+    color: white;
+    font-size: 24px;
     cursor: pointer;
+    z-index: 1001;
 }
