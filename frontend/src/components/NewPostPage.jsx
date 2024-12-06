@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import './NewPostPage.css';
 import { FaImage, FaMapMarkerAlt } from 'react-icons/fa';
+import axios from 'axios';
 
-function NewPostPage() {
+function NewPostPage({ userId }) {
     const [formData, setFormData] = useState({
+        // 画像、プレビュー、場所、説明
         image: null,
-        imagePreview: null,
+        imagePreview: null,//dbできればいらない
         location: '',
         description: ''
     });
@@ -20,23 +22,38 @@ function NewPostPage() {
         "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県"
     ];
 
+// 画像ファイルの選択とプレビューを処理
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
             setFormData({
-                ...formData,
+                ...formData,//これなんだっけ？by madoromi
                 image: file,
-                imagePreview: URL.createObjectURL(file)
+                imagePreview: URL.createObjectURL(file)// 選択された画像のプレビューURL、dbできればいらない
             });
         }
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log('投稿データ:', formData);
-        // ここで投稿処理を実装
-    };
+// フォーム送信
+const handleSubmit = async (e) => {
+    e.preventDefault();
+    const data = new FormData();
+    data.append('file', formData.image);
+    data.append('location', formData.location);
+    data.append('description', formData.description);
+    data.append('userId', userId);
 
+    try {
+        const response = await axios.post('http://localhost:5000/upload-photo', data, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        alert(response.data.message);
+    } catch (error) {
+        alert(error.response.data.error || 'エラーが発生しました');
+    }
+};
+
+//HTML
     return (
         <div className="new-post-page">
             <div className="new-post-container">
