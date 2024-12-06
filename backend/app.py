@@ -34,22 +34,22 @@ def register():
     data = request.json
     username = data['username']
     password = data['password']
-    user_id = str(uuid.uuid4())
 
     # パスワードをハッシュ化
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
-     # Supabase登録
+    # Supabase登録
     try:
         response = supabase.table('Users').insert({
             'username': username,
-            'userId': user_id,
             'password': hashed_password
         }).execute()
-        if response.status_code == 201:
-            return jsonify({'message': 'User registered successfully'}), 201
-        else:
-            return jsonify({'error': response.error_message}), 500
+
+        # レスポンスにエラーがあるか確認
+        if response.error:
+            return jsonify({'error': response.error.message}), 500
+        return jsonify({'message': 'ユーザー登録が成功しました'}), 201
+
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     """

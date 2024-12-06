@@ -77,11 +77,11 @@ function Timeline() {
             </div>
             <span className="timestamp">{formatDate(item.timestamp)}</span>
           </div>
-          
+
           <div className="post-image">
             <img src={item.photo} alt={`${item.username}の投稿`} />
           </div>
-          
+
           <div className="post-content">
             <div className="like-section">
               <button
