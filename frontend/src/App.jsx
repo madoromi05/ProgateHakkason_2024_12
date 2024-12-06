@@ -1,11 +1,11 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-<BrowserRouter>
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+{/*<BrowserRouter>
   <Routes>
     <Route path="/" element={<Home />} />
-    <Route path="/about" element={<About />} />
+    {<Route path="/about" element={<About />} />
   </Routes>
-</BrowserRouter>
+</BrowserRouter>*/}
 import NavBar from './components/NavBar';
 import Profile from './components/Profile';
 import Home from './components/Home';
@@ -15,11 +15,8 @@ import Contact from './components/Contact';
 import LoginForm from './components/LoginFrom';
 import RegisterForm from './components/RegisterForm';
 
-
-
 function App() {
     return (
-        
         <Router>
             <NavBar/>
             <Routes>
@@ -31,7 +28,6 @@ function App() {
 
             </Routes>
         </Router>
-      
     );
   return (
     <>
