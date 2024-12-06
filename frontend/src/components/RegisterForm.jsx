@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import './RegisterForm.css'; // スタイルを追加する場合
+import { useNavigate } from 'react-router-dom';
+import './RegisterForm.css';
 
 function RegisterForm() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,7 +21,7 @@ function RegisterForm() {
         password,
       });
       alert(response.data.message);
-      // 登録成功後の処理を追加
+      navigate('/timeline');
     } catch (error) {
       alert(error.response.data.error || 'エラーが発生しました');
     }
@@ -62,6 +64,7 @@ function RegisterForm() {
           </div>
           <button type="submit" className="submit-button">登録</button>
         </form>
+        <button className="login-button" onClick={() => navigate('/login')}>ログイン</button>
       </div>
     </div>
   );

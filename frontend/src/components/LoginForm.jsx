@@ -17,6 +17,7 @@ function LoginForm({ onLogin }) {
       });
       alert(response.data.message);
       onLogin();
+      navigate('/timeline');
     } catch (error) {
       alert(error.response.data.error || 'An error occurred');
     }
