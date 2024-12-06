@@ -14,6 +14,9 @@ function App() {
         <p>
           Edit <code>src/App.jsx</code> and save to test HMR
         </p>
+        <h1>My App</h1>
+          <LoginForm />
+          <RegisterForm />
       </div>
       <div className="result_button">
         <a href="./timeline.html">結果を見る</a>
