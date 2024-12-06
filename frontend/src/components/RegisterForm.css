@@ -72,6 +72,7 @@
     transition: background-color 0.3s, color 0.3s;
 }
 
+
 .login-button:hover {
     background-color: #ff4081;
     color: #ffffff;
