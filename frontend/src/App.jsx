@@ -1,5 +1,11 @@
 import React from 'react';
-import {BrowserRouter as Router, Routes, Route} from '/react-router-dom';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+<BrowserRouter>
+  <Routes>
+    <Route path="/" element={<Home />} />
+    <Route path="/about" element={<About />} />
+  </Routes>
+</BrowserRouter>
 import NavBar from './components/NavBar';
 import Profile from './components/Profile';
 import Home from './components/Home';
