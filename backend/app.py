@@ -38,7 +38,7 @@ def register():
         table.put_item(
             Item={
                 'username': username,
-                 'userId': user_id,
+                'userId': user_id,
                 'password': hashed_password
             }
         )
