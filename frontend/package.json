@@ -15,11 +15,7 @@
     "leaflet": "^1.9.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-<<<<<<< HEAD
-    "react-image-gallery": "^1.3.0",
-=======
     "react-icons": "^5.4.0",
->>>>>>> shoma_front
     "react-leaflet": "^4.2.1",
     "react-router-dom": "^7.0.2"
   },
