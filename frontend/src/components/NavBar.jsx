@@ -6,7 +6,7 @@ function NavBar() {
     return(
         <nav className="navbar">
             <div className="navbar-logo">
-                <Link to="/">SNS App</Link>
+                <Link to="/home">SNS App</Link>
             </div>
             <ul className="navbar-links">
                 <li>
@@ -29,7 +29,6 @@ function NavBar() {
                 </li>
             </ul>
         </nav>
-
     )
 }
 

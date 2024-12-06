@@ -30,15 +30,3 @@
 .navbar-links li a:hover{
     color:#ff4081;
 }
-
-/* レスポンシブデザイン */
-@media (max-width:768px){
-    .navbar{
-        flex-direction:column;
-    }
-
-    .navbar-links{
-        flex-direction:column;
-        gap:1rem;
-    }
-}
