@@ -183,7 +183,7 @@
     font-size: 14px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 850px) {
     .profile-header {
         flex-direction: column;
         text-align: center;

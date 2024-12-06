@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { FaHome, FaUser, FaEdit, FaClock } from 'react-icons/fa';
+import { FaHome, FaUser, FaEdit, FaClock , FaSignInAlt} from 'react-icons/fa';
 import './NavBar.css';
 
 function NavBar() {
@@ -32,6 +32,12 @@ function NavBar() {
           <Link to="/posts/new">
             <FaEdit className="nav-icon" />
             <span>NewPost</span>
+          </Link>
+        </li>
+        <li className={isActive('/login')}>
+          <Link to="/login">
+            <FaSignInAlt className="nav-icon" />
+            <span>Login</span>
           </Link>
         </li>
       </ul>

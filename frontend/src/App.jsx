@@ -6,6 +6,8 @@ import Profile from './components/Profile';
 import UserProfile from './components/UserProfile';
 import NewPostPage from './components/NewPostPage';
 import AllPosts from './components/AllPosts';
+import LoginForm from './components/LoginForm';
+import RegisterForm from './components/RegisterForm';
 import './App.css';
 
 function App() {
@@ -19,6 +21,8 @@ function App() {
           <Route path="/user/:username" element={<UserProfile />} />
           <Route path="/posts/new" element={<NewPostPage />} />
           <Route path="/posts" element={<AllPosts />} />
+          <Route path="/login" element={<LoginForm />} />
+          <Route path="/register" element={<RegisterForm />} />
         </Routes>
       </main>
     </div>
