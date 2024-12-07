@@ -65,7 +65,7 @@ function Timeline() {
 
   return (
     <div className="timeline-container">
-      <h2>タイムライン</h2>
+      <h2></h2>
       {dummyData.map((item, index) => (
         <div key={item.id} className="post-card">
           <div className="post-header">
