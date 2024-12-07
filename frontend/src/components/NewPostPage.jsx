@@ -49,6 +49,7 @@ const handleSubmit = async (e) => {
         });
         alert(response.data.message);
     } catch (error) {
+        console.error('---------------------',error);
         alert(error.response.data.error || 'エラーが発生しました');
     }
 };
