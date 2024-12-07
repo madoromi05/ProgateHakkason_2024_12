@@ -7,6 +7,7 @@ import axios from 'axios';
 function Timeline() {
   const [photos, setPhotos] = useState([]);
   const [likes, setLikes] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPhotos = async () => {
@@ -22,6 +23,8 @@ function Timeline() {
         })));
       } catch (error) {
         console.error('Error fetching photos:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -54,6 +57,10 @@ function Timeline() {
       minute: '2-digit'
     });
   };
+
+  if (loading) {
+    return <div className="loading">読み込み中...</div>;
+  }
 
   return (
     <div className="timeline-container">

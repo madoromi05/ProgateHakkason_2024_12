@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
-import { FaCamera } from 'react-icons/fa';
+import { FaCamera, FaMapMarkerAlt } from 'react-icons/fa';
 import './NewPostPage.css';
 import CameraComp from './CameraComp';
 import axios from 'axios';
@@ -56,16 +55,15 @@ function NewPostPage({ userId }) {
         data.append('userId', userId);
 
         try {
-            const response = await axios.post('http://localhost:5000/upload-photo', data, {
+            await axios.post('http://localhost:5000/upload-photo', data, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
             alert('投稿が完了しました！');
-            navigate('/timeline');
-        navigate('/');
+            setIsSubmitting(false);
+            navigate('/', { replace: true });
         } catch (error) {
-        console.error('---------------------',error);
+            console.error('---------------------',error);
             alert(error.response?.data?.error || 'エラーが発生しました');
-        } finally {
             setIsSubmitting(false);
         }
     };

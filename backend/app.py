@@ -18,7 +18,7 @@ logging.basicConfig(level=logging.DEBUG)
 # Flask Setup
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
-CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})
+CORS(app, resources={r"/*": {"origins": ["http://localhost:5173", "http://localhost:4173"]}})
 
 # DynamoDB Client
 dynamodb = boto3.resource(
