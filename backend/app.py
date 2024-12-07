@@ -51,7 +51,7 @@ def register():
     data = request.json
     if not data or 'username' not in data or 'password' not in data:
         return jsonify({'error': 'Username and password are required'}), 400
-
+    
     username = data['username']
     password = data['password']
     user_id = str(uuid.uuid4())
@@ -92,6 +92,7 @@ def login():
         stored_password = response['Item']['password']
         if bcrypt.check_password_hash(stored_password, password):
             return jsonify({'message': 'Login successful'}), 200
+
         else:
             return jsonify({'error': 'Invalid password'}), 401
     except Exception as e:
@@ -173,28 +174,6 @@ def get_photos():
         return jsonify(photos), 200
     except Exception as e:
         logging.error(f"Error in get_photos: {str(e)}")
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/posts/new',methods=['POST'])
-def post_photo():
-    data = request.json
-    username = data['username']
-    photo_url = data['photo_url']
-    prefecture = data['prefecture']
-
-    try:
-        response = table.update_item(
-            Key={'username': username},
-            UpdateExpression="SET photos = list_append(if_not_exists(photos, :empty_list), :photo), prefectures = list_append(if_not_exists(prefectures, :empty_list), :prefecture)",
-            ExpressionAttributeValues={
-                ':photo': [photo_url],
-                ':prefecture': [prefecture],
-                ':empty_list': []
-            },
-            ReturnValues="UPDATED_NEW"
-        )
-        return jsonify({'message': 'Photo posted successfully'}), 200
-    except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
