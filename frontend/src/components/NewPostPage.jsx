@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FaCamera } from 'react-icons/fa';
 import './NewPostPage.css';
-import { FaImage, FaMapMarkerAlt } from 'react-icons/fa';
+import CameraComp from './CameraComp';
 import axios from 'axios';
 
 function NewPostPage({ userId }) {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        // 画像、プレビュー、場所、説明
         image: null,
-        imagePreview: null,//dbできればいらない
+        imagePreview: null,
         location: '',
         description: ''
     });
+    const [showCamera, setShowCamera] = useState(true);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const prefectures = [
         "北海道", "青森県", "岩手県", "宮城県", "秋田県", "山形県", "福島県",
@@ -22,101 +26,121 @@ function NewPostPage({ userId }) {
         "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県"
     ];
 
-// 画像ファイルの選択とプレビューを処理
-    const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setFormData({
-                ...formData,//これなんだっけ？by madoromi
-                image: file,
-                imagePreview: URL.createObjectURL(file)// 選択された画像のプレビューURL、dbできればいらない
+    const handlePhotoCapture = (blob) => {
+        setFormData({
+            ...formData,
+            image: blob,
+            imagePreview: URL.createObjectURL(blob)
+        });
+        setShowCamera(false);
+    };
+
+    const handleCancel = () => {
+        navigate(-1);
+    };
+
+    const handleRetake = () => {
+        setShowCamera(true);
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (isSubmitting) return;
+
+        setIsSubmitting(true);
+        const data = new FormData();
+        data.append('file', formData.image);
+        data.append('location', formData.location);
+        data.append('description', formData.description);
+        data.append('userId', userId);
+
+        try {
+            const response = await axios.post('http://localhost:5000/upload-photo', data, {
+                headers: { 'Content-Type': 'multipart/form-data' }
             });
+            alert('投稿が完了しました！');
+            navigate('/timeline');
+        } catch (error) {
+            alert(error.response?.data?.error || 'エラーが発生しました');
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
-// フォーム送信
-const handleSubmit = async (e) => {
-    e.preventDefault();
-    const data = new FormData();
-    data.append('file', formData.image);
-    data.append('location', formData.location);
-    data.append('description', formData.description);
-    data.append('userId', userId);
-
-    try {
-        const response = await axios.post('http://localhost:5000/upload-photo', data, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-        });
-        alert(response.data.message);
-    } catch (error) {
-        alert(error.response.data.error || 'エラーが発生しました');
-    }
-};
-
-//HTML
     return (
         <div className="new-post-page">
-            <div className="new-post-container">
-                <h2>新規投稿</h2>
-                <form onSubmit={handleSubmit} className="new-post-form">
-                    <div className="image-upload-section">
-                        <input
-                            type="file"
-                            id="image-upload"
-                            accept="image/*"
-                            onChange={handleImageChange}
-                            className="hidden-input"
-                        />
-                        <label htmlFor="image-upload" className="upload-area">
-                            {formData.imagePreview ? (
-                                <img 
-                                    src={formData.imagePreview} 
-                                    alt="プレビュー" 
-                                    className="image-preview"
-                                />
-                            ) : (
-                                <div className="upload-placeholder">
-                                    <FaImage className="upload-icon" />
-                                    <p>画像を選択</p>
-                                </div>
-                            )}
-                        </label>
-                    </div>
+            {showCamera ? (
+                <div className="camera-wrapper">
+                    <CameraComp 
+                        onPhotoCapture={handlePhotoCapture}
+                        onCancel={handleCancel}
+                    />
+                </div>
+            ) : (
+                <div className="new-post-container">
+                    <h2>新規投稿</h2>
+                    <form onSubmit={handleSubmit} className="new-post-form">
+                        <div className="preview-container">
+                            <img 
+                                src={formData.imagePreview} 
+                                alt="プレビュー" 
+                                className="image-preview"
+                            />
+                            <button 
+                                type="button"
+                                onClick={handleRetake}
+                                className="retake-button"
+                            >
+                                <FaCamera /> 撮り直す
+                            </button>
+                        </div>
 
-                    <div className="form-group">
-                        <label>
-                            <FaMapMarkerAlt className="input-icon" />
-                            撮影場所
-                        </label>
-                        <select
-                            value={formData.location}
-                            onChange={(e) => setFormData({...formData, location: e.target.value})}
-                            required
-                        >
-                            <option value="">都道府県を選択</option>
-                            {prefectures.map(prefecture => (
-                                <option key={prefecture} value={prefecture}>
-                                    {prefecture}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+                        <div className="form-group">
+                            <label htmlFor="location">場所</label>
+                            <select
+                                id="location"
+                                value={formData.location}
+                                onChange={(e) => setFormData({...formData, location: e.target.value})}
+                                required
+                            >
+                                <option value="">選択してください</option>
+                                {prefectures.map(pref => (
+                                    <option key={pref} value={pref}>{pref}</option>
+                                ))}
+                            </select>
+                        </div>
 
-                    <div className="form-group">
-                        <label>説明</label>
-                        <textarea
-                            value={formData.description}
-                            onChange={(e) => setFormData({...formData, description: e.target.value})}
-                            placeholder="写真の説明を入力してください"
-                            required
-                        />
-                    </div>
+                        <div className="form-group">
+                            <label htmlFor="description">説明</label>
+                            <textarea
+                                id="description"
+                                value={formData.description}
+                                onChange={(e) => setFormData({...formData, description: e.target.value})}
+                                required
+                                placeholder="写真の説明を入力してください"
+                            />
+                        </div>
 
-                    <button type="submit" className="submit-button">
-                        投稿する
-                    </button>
-                </form>
-            </div>
+                        <div className="form-buttons">
+                            <button 
+                                type="button" 
+                                onClick={handleCancel}
+                                className="cancel-button"
+                                disabled={isSubmitting}
+                            >
+                                キャンセル
+                            </button>
+                            <button 
+                                type="submit" 
+                                className="submit-button"
+                                disabled={isSubmitting}
+                            >
+                                {isSubmitting ? '投稿中...' : '投稿する'}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            )}
         </div>
     );
 }

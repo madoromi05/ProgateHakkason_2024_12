@@ -1,0 +1,161 @@
+.camera-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #000;
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.camera-preview-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.camera-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.camera-preview.mirror {
+    transform: scaleX(-1);
+}
+
+.camera-top-controls {
+    position: absolute;
+    top: max(20px, env(safe-area-inset-top));
+    right: max(20px, env(safe-area-inset-right));
+    z-index: 1001;
+}
+
+.camera-controls {
+    position: absolute;
+    bottom: max(30px, env(safe-area-inset-bottom));
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+    padding: 20px;
+    z-index: 1001;
+}
+
+.control-button {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.control-button:hover {
+    background-color: rgba(0, 0, 0, 0.7);
+    transform: scale(1.1);
+}
+
+.control-button:active {
+    transform: scale(0.95);
+}
+
+.cancel-button {
+    background-color: rgba(255, 59, 48, 0.8);
+}
+
+.cancel-button:hover {
+    background-color: rgba(255, 59, 48, 1);
+}
+
+.switch-camera-button {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.switch-camera-button:hover {
+    background-color: rgba(255, 255, 255, 0.4);
+}
+
+.capture-button {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background-color: white;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.capture-button::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 2px solid #333;
+}
+
+.capture-button:hover {
+    transform: scale(1.1);
+}
+
+.capture-button:active {
+    transform: scale(0.95);
+}
+
+.camera-error {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .camera-controls {
+        gap: 30px;
+    }
+
+    .control-button {
+        width: 40px;
+        height: 40px;
+    }
+
+    .capture-button {
+        width: 60px;
+        height: 60px;
+    }
+
+    .capture-button::after {
+        width: 50px;
+        height: 50px;
+    }
+}
+
+@media (orientation: landscape) {
+    .camera-controls {
+        bottom: 20px;
+    }
+}
+
+.control-button:disabled,
+.capture-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
