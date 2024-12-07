@@ -37,9 +37,9 @@ s3 = boto3.client(
     region_name='us-west-2',
     aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
     aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
-    aws_session_token=os.getenv('AWS_SESSION_TOKEN'),
+    aws_session_token=os.getenv('AWS_SESSION_TOKEN')
 )
-bucket_name = 'remap-posts'  # ここを実際のバケット名に置き換えてください
+bucket_name = 'remap-posts'
 
 # 接続確認用
 @app.route('/')
@@ -106,6 +106,7 @@ def upload_photo():
     print(os.getenv('AWS_SECRET_ACCESS_KEY'))
     print(os.getenv('AWS_SESSION_TOKEN'))
     print('---------------------')
+
     if 'file' not in request.files:
         return jsonify({'error': 'No file uploaded'}), 400
 
@@ -175,6 +176,28 @@ def get_photos():
     except Exception as e:
         logging.error(f"Error in get_photos: {str(e)}")
         return jsonify({'error': str(e)}), 500
+"""
+@app.route('/posts/new',methods=['POST'])
+def post_photo():
+    data = request.json
+    username = data['username']
+    photo_url = data['photo_url']
+    prefecture = data['prefecture']
 
+    try:
+        response = table.update_item(
+            Key={'username': username},
+            UpdateExpression="SET photos = list_append(if_not_exists(photos, :empty_list), :photo), prefectures = list_append(if_not_exists(prefectures, :empty_list), :prefecture)",
+            ExpressionAttributeValues={
+                ':photo': [photo_url],
+                ':prefecture': [prefecture],
+                ':empty_list': []
+            },
+            ReturnValues="UPDATED_NEW"
+        )
+        return jsonify({'message': 'Photo posted successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+"""
 if __name__ == '__main__':
     app.run(debug=True)
