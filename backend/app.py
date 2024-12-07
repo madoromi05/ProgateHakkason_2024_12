@@ -4,14 +4,23 @@ from flask_cors import CORS
 import boto3
 from boto3.session import Session
 from boto3.dynamodb.conditions import Key
+from dotenv import load_dotenv
 import os
 import uuid
-
 
 # Flask Setup
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
 CORS(app)
+
+# 環境変数でDynamoDBリソースを取得
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table('Users')
+
+load_dotenv()
+aws_access_key = os.getenv('AWS_ACCESS_KEY_ID')
+aws_secret_key = os.getenv('AWS_SECRET_ACCESS_KEY')
+aws_region = os.getenv('AWS_REGION')
 
 #接続確認用
 @app.route('/')
@@ -30,21 +39,6 @@ def register():
 
     # パスワードをハッシュ化
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-    """
-    # Supabase登録
-    try:
-        response = supabase.table('Users').insert({
-            'username': username,
-            'userId': user_id,
-            'password': hashed_password
-        }).execute()
-        if response.status_code == 201:
-            return jsonify({'message': 'User registered successfully'}), 201
-        else:
-            return jsonify({'error': response.error_message}), 500
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-    """
     # DynamoDB登録
     try:
         table.put_item(
