@@ -2,27 +2,16 @@ from flask import Flask, request, jsonify
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 import boto3
+from boto3.session import Session
+from boto3.dynamodb.conditions import Key
 import os
 import uuid
 
-from supabase import create_client, Client
 
 # Flask Setup
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
 CORS(app)
-"""
-# DynamoDB Client
-#リージョン東京
-dynamodb = boto3.resource('dynamodb', region_name='ap-northeast-1')
-#テーブル名Users
-table = dynamodb.Table('Users')
-"""
-
-# SupabaseのURLとAPIキーを設定
-url = "https://oqppbujbkpyfaaxdqqjh.supabase.co"
-key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xcHBidWpia3B5ZmFheGRxcWpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM1MDQ3NzIsImV4cCI6MjA0OTA4MDc3Mn0.KQyEGSfmykNOKp9T-ihrDTW0wbwN3lTcsemrGEVUdwE"
-supabase: Client = create_client(url, key)
 
 #接続確認用
 @app.route('/')
@@ -32,13 +21,16 @@ def hello_world():
 @app.route('/register', methods=['POST'])
 def register():
     data = request.json
+    if not data or 'username' not in data or 'password' not in data:
+        return jsonify({'error': 'Username and password are required'}), 400
+
     username = data['username']
     password = data['password']
     user_id = str(uuid.uuid4())
 
     # パスワードをハッシュ化
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-
+    """
     # Supabase登録
     try:
         response = supabase.table('Users').insert({
@@ -59,13 +51,16 @@ def register():
             Item={
                 'username': username,
                 'userId': user_id,
-                'password': hashed_password
+                'password': hashed_password,
+                'photos':[],
+                'prefectures':[],
+                #47個
+                'todoufukenn':[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
             }
         )
         return jsonify({'message': 'User registered successfully'}), 201
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-    """
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -143,5 +138,27 @@ def upload_photo():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     """
+@app.route('/posts/new',methods=['POST'])
+def post_photo():
+    data = request.json
+    username = data['username']
+    photo_url = data['photo_url']
+    prefecture = data['prefecture']
+
+    try:
+        response = table.update_item(
+            Key={'username': username},
+            UpdateExpression="SET photos = list_append(if_not_exists(photos, :empty_list), :photo), prefectures = list_append(if_not_exists(prefectures, :empty_list), :prefecture)",
+            ExpressionAttributeValues={
+                ':photo': [photo_url],
+                ':prefecture': [prefecture],
+                ':empty_list': []
+            },
+            ReturnValues="UPDATED_NEW"
+        )
+        return jsonify({'message': 'Photo posted successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     app.run(debug=True)

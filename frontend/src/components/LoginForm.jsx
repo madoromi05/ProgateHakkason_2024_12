@@ -17,7 +17,7 @@ function LoginForm({ onLogin }) {
       });
       alert(response.data.message);
       onLogin();
-      navigate('/timeline');
+      navigate('../timeline');
     } catch (error) {
       alert(error.response.data.error || 'An error occurred');
     }
@@ -55,6 +55,5 @@ function LoginForm({ onLogin }) {
     </div>
   );
 }
-
 
 export default LoginForm;

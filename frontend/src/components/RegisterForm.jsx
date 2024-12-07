@@ -21,7 +21,7 @@ function RegisterForm() {
         password,
       });
       alert(response.data.message);
-      navigate('/timeline');
+      navigate('../timeline');
     } catch (error) {
       alert(error.response.data.error || 'エラーが発生しました');
     }
@@ -69,6 +69,5 @@ function RegisterForm() {
     </div>
   );
 }
-
 
 export default RegisterForm;
