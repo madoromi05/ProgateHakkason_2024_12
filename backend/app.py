@@ -17,11 +17,15 @@ CORS(app)
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('Users')
 
+# 環境変数でDynamoDBリソースを取得
+"""
 load_dotenv()
-aws_access_key = os.getenv('AWS_ACCESS_KEY_ID')
-aws_secret_key = os.getenv('AWS_SECRET_ACCESS_KEY')
-aws_region = os.getenv('AWS_REGION')
-
+dynamodb = boto3.resource('dynamodb', 
+                          aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
+                          aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
+                          region_name=os.getenv('AWS_REGION'))
+table = dynamodb.Table('Users')
+"""
 #接続確認用
 @app.route('/')
 def hello_world():
@@ -59,22 +63,26 @@ def register():
 @app.route('/login', methods=['POST'])
 def login():
     data = request.json
+    if not data or 'username' not in data or 'password' not in data:
+        return jsonify({'error': 'Username and password are required'}), 400
     username = data['username']
     password = data['password']
 
-    # Supabaseからユーザーを取得
     try:
-        response = supabase.table('Users').select('*').eq('username', username).execute()
-        if not response.data:
+        # DynamoDBからユーザーを取得
+        response = table.get_item(Key={'username': username})
+        
+        if 'Item' not in response:
             return jsonify({'error': 'User not found'}), 404
 
         # パスワードを検証
-        stored_password = response.data[0]['password']
-        user_id = response.data[0]['userId']
+        stored_password = response['Item']['password']
+        
         if bcrypt.check_password_hash(stored_password, password):
-            return jsonify({'message': 'Login successful'}), 200
+            return jsonify({'message': 'Login successful', 'userId': response['Item']['userId']}), 200
         else:
             return jsonify({'error': 'Invalid password'}), 401
+            
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -91,32 +99,7 @@ def upload_photo():
     if not all([file, location, description, user_id]):
         return jsonify({'error': 'Missing fields'}), 400
 
-    try:
-        # ファイル名を一意に
-        file_ext = file.filename.split('.')[-1]
-        unique_filename = f"{uuid.uuid4()}.{file_ext}"
-        storage_path = f"photos/{unique_filename}"
 
-        # Supabaseストレージにアップロード
-        supabase.storage.from_('uploads').upload(storage_path, file)
-        public_url = f"https://oqppbujbkpyfaaxdqqjh.supabase.co/storage/v1/object/public/uploads/{storage_path}"
-
-        # SupabaseのPhotosテーブルに登録
-        response = supabase.table('Photos').insert({
-            'photoId': str(uuid.uuid4()),
-            'userId': user_id,
-            'location': location,
-            'description': description,
-            'imageUrl': public_url
-        }).execute()
-
-        if response.status_code == 201:
-            return jsonify({'message': 'Photo uploaded successfully', 'imageUrl': public_url}), 201
-        else:
-            return jsonify({'error': response.error_message}), 500
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-    """
     # DynamoDBからユーザーを取得
     try:
         response = table.get_item(Key={'username': username})
@@ -131,7 +114,7 @@ def upload_photo():
             return jsonify({'error': 'Invalid password'}), 401
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-    """
+
 @app.route('/posts/new',methods=['POST'])
 def post_photo():
     data = request.json
