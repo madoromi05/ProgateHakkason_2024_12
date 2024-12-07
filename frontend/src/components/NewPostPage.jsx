@@ -13,7 +13,7 @@ function NewPostPage({ userId }) {
         location: '',
         description: ''
     });
-    const [showCamera, setShowCamera] = useState(true);
+    const [showCamera, setShowCamera] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const prefectures = [
@@ -36,7 +36,11 @@ function NewPostPage({ userId }) {
     };
 
     const handleCancel = () => {
-        navigate(-1);
+        if (showCamera) {
+            setShowCamera(false);
+        } else {
+            navigate(-1);
+        }
     };
 
     const handleRetake = () => {
@@ -44,7 +48,7 @@ function NewPostPage({ userId }) {
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
         if (isSubmitting) return;
 
         setIsSubmitting(true);
@@ -77,69 +81,86 @@ function NewPostPage({ userId }) {
                     />
                 </div>
             ) : (
-                <div className="new-post-container">
-                    <h2>新規投稿</h2>
-                    <form onSubmit={handleSubmit} className="new-post-form">
-                        <div className="preview-container">
-                            <img 
-                                src={formData.imagePreview} 
-                                alt="プレビュー" 
-                                className="image-preview"
-                            />
-                            <button 
-                                type="button"
-                                onClick={handleRetake}
-                                className="retake-button"
-                            >
-                                <FaCamera /> 撮り直す
-                            </button>
+                <>
+                    {!formData.imagePreview ? (
+                        <div className="new-post-container">
+                            <h2>新規投稿</h2>
+                            <div className="camera-start-container">
+                                <button 
+                                    onClick={() => setShowCamera(true)}
+                                    className="camera-start-button"
+                                >
+                                    <FaCamera />
+                                    <span>タップしてカメラを起動</span>
+                                </button>
+                            </div>
                         </div>
+                    ) : (
+                        <div className="new-post-container">
+                            <h2>新規投稿</h2>
+                            <div className="new-post-form">
+                                <div className="preview-container">
+                                    <img 
+                                        src={formData.imagePreview} 
+                                        alt="プレビュー" 
+                                        className="image-preview"
+                                    />
+                                    <button 
+                                        type="button"
+                                        onClick={handleRetake}
+                                        className="retake-button"
+                                    >
+                                        <FaCamera /> 撮り直す
+                                    </button>
+                                </div>
 
-                        <div className="form-group">
-                            <label htmlFor="location">場所</label>
-                            <select
-                                id="location"
-                                value={formData.location}
-                                onChange={(e) => setFormData({...formData, location: e.target.value})}
-                                required
-                            >
-                                <option value="">選択してください</option>
-                                {prefectures.map(pref => (
-                                    <option key={pref} value={pref}>{pref}</option>
-                                ))}
-                            </select>
-                        </div>
+                                <div className="form-group">
+                                    <label htmlFor="location">場所</label>
+                                    <select
+                                        id="location"
+                                        value={formData.location}
+                                        onChange={(e) => setFormData({...formData, location: e.target.value})}
+                                        required
+                                    >
+                                        <option value="">選択してください</option>
+                                        {prefectures.map(pref => (
+                                            <option key={pref} value={pref}>{pref}</option>
+                                        ))}
+                                    </select>
+                                </div>
 
-                        <div className="form-group">
-                            <label htmlFor="description">説明</label>
-                            <textarea
-                                id="description"
-                                value={formData.description}
-                                onChange={(e) => setFormData({...formData, description: e.target.value})}
-                                required
-                                placeholder="写真の説明を入力してください"
-                            />
+                                <div className="form-group">
+                                    <label htmlFor="description">説明</label>
+                                    <textarea
+                                        id="description"
+                                        value={formData.description}
+                                        onChange={(e) => setFormData({...formData, description: e.target.value})}
+                                        required
+                                        placeholder="写真の説明を入力してください"
+                                    />
+                                </div>
+                            </div>
+                            <div className="form-buttons">
+                                <button 
+                                    type="button" 
+                                    onClick={handleCancel}
+                                    className="cancel-button"
+                                    disabled={isSubmitting}
+                                >
+                                    キャンセル
+                                </button>
+                                <button 
+                                    type="button"
+                                    onClick={handleSubmit}
+                                    className="submit-button"
+                                    disabled={isSubmitting}
+                                >
+                                    {isSubmitting ? '投稿中...' : '投稿する'}
+                                </button>
+                            </div>
                         </div>
-
-                        <div className="form-buttons">
-                            <button 
-                                type="button" 
-                                onClick={handleCancel}
-                                className="cancel-button"
-                                disabled={isSubmitting}
-                            >
-                                キャンセル
-                            </button>
-                            <button 
-                                type="submit" 
-                                className="submit-button"
-                                disabled={isSubmitting}
-                            >
-                                {isSubmitting ? '投稿中...' : '投稿する'}
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                    )}
+                </>
             )}
         </div>
     );
