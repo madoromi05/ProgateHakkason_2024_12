@@ -39,7 +39,7 @@ s3 = boto3.client(
     aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
     aws_session_token=os.getenv('AWS_SESSION_TOKEN')
 )
-bucket_name = 'remap-posts'  # ここを実際のバケット名に置き換えてください
+bucket_name = 'remap-posts'
 
 # 接続確認用
 @app.route('/')
@@ -175,7 +175,7 @@ def get_photos():
     except Exception as e:
         logging.error(f"Error in get_photos: {str(e)}")
         return jsonify({'error': str(e)}), 500
-
+"""
 @app.route('/posts/new',methods=['POST'])
 def post_photo():
     data = request.json
@@ -197,6 +197,6 @@ def post_photo():
         return jsonify({'message': 'Photo posted successfully'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
+"""
 if __name__ == '__main__':
     app.run(debug=True)
