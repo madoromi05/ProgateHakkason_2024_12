@@ -30,10 +30,10 @@ function RegisterForm() {
   return (
     <div className="register-form-container">
       <div className="form-content">
-        <h2>ユーザー登録</h2>
+        <h2>New Account</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="username">ユーザー名:</label>
+            <label htmlFor="username">UserName:</label>
             <input
               type="text"
               id="username"
@@ -43,7 +43,7 @@ function RegisterForm() {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="password">パスワード:</label>
+            <label htmlFor="password">Password:</label>
             <input
               type="password"
               id="password"
@@ -53,7 +53,7 @@ function RegisterForm() {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="confirmPassword">パスワード確認:</label>
+            <label htmlFor="confirmPassword">Confirm Password:</label>
             <input
               type="password"
               id="confirmPassword"
