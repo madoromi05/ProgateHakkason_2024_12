@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './NewPostPage.css';
 import { FaImage, FaMapMarkerAlt } from 'react-icons/fa';
 import axios from 'axios';
 
 function NewPostPage({ userId }) {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         // 画像、プレビュー、場所、説明
         image: null,
@@ -48,6 +50,7 @@ const handleSubmit = async (e) => {
             headers: { 'Content-Type': 'multipart/form-data' }
         });
         alert(response.data.message);
+        navigate('/');
     } catch (error) {
         console.error('---------------------',error);
         alert(error.response.data.error || 'エラーが発生しました');
@@ -87,7 +90,7 @@ const handleSubmit = async (e) => {
                     <div className="form-group">
                         <label>
                             <FaMapMarkerAlt className="input-icon" />
-                            撮影場所
+                            ロケーション
                         </label>
                         <select
                             value={formData.location}
@@ -104,12 +107,11 @@ const handleSubmit = async (e) => {
                     </div>
 
                     <div className="form-group">
-                        <label>説明</label>
+                        <label>キャプション</label>
                         <textarea
                             value={formData.description}
                             onChange={(e) => setFormData({...formData, description: e.target.value})}
-                            placeholder="写真の説明を入力してください"
-                            required
+                            placeholder="写真の説明を入力してください（任意）"
                         />
                     </div>
 
