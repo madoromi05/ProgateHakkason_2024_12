@@ -6,7 +6,7 @@ function AllPosts() {
     const [posts] = useState([
         {
             id: 1,
-            imageUrl: 'https://www.cubeinc.co.jp/wp/wp-content/uploads/2020/05/koheimatsushita20220922-2.jpg',
+            imageUrl: 'https://via.placeholder.com/300',
             location: '東京都',
             description: '東京の風景',
             date: '2024-01-20',
@@ -14,7 +14,7 @@ function AllPosts() {
         },
         {
             id: 2,
-            imageUrl: 'https://fc.niziu.com/files/4/n120/public/assets/images/page/1st_anniversary/kuji/kuji_item01.jpg',
+            imageUrl: 'https://via.placeholder.com/300',
             location: '大阪府',
             description: '大阪の夜景',
             date: '2024-01-19',

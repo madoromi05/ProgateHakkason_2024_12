@@ -9,7 +9,7 @@ function Profile() {
     const [posts] = useState([
         {
             id: 1,
-            imageUrl: 'https://www.cubeinc.co.jp/wp/wp-content/uploads/2020/05/koheimatsushita20220922-2.jpg',
+            imageUrl: 'https://via.placeholder.com/300',
             location: '東京都',
             description: '東京の風景',
             date: '2024-01-20',
@@ -17,7 +17,7 @@ function Profile() {
         },
         {
             id: 2,
-            imageUrl: 'https://fc.niziu.com/files/4/n120/public/assets/images/page/1st_anniversary/kuji/kuji_item01.jpg',
+            imageUrl: 'https://via.placeholder.com/300',
             location: '大阪府',
             description: '大阪の夜景',
             date: '2024-01-19',
@@ -37,19 +37,19 @@ function Profile() {
         <div className="profile-container">
             <div className="profile-header">
                 <img 
-                    src="https://ogre.natalie.mu/artist/48196/20230705/tanakakei_art202306.jpg?imwidth=640&imdensity=1" 
+                    src="https://via.placeholder.com/150" 
                     alt="プロフィール画像" 
                     className="profile-image" 
                 />
                 <div className="profile-info">
-                    <h2>shoma_0710</h2>
+                    <h2>UserName</h2>
                     <div className="profile-stats">
                         <span><strong>投稿</strong> {posts.length}</span>
                         <span><strong>フォロワー</strong> 100</span>
                         <span><strong>フォロー中</strong> 150</span>
                     </div>
                     <div className="profile-bio">
-                        <p>翔眞です。よろしくお願いします。</p>
+                        <p>Profile-bio</p>
                     </div>
                 </div>
             </div>

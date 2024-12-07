@@ -9,7 +9,7 @@ function Timeline() {
       id: 1,
       icon: 'https://via.placeholder.com/40',
       username: 'user1',
-      photo: 'https://www.cubeinc.co.jp/wp/wp-content/uploads/2020/05/koheimatsushita20220922-2.jpg',
+      photo: 'https://via.placeholder.com/300',
       likes: 10,
       description: '東京の風景です。',
       timestamp: '2024-01-15T12:00:00'
@@ -18,7 +18,7 @@ function Timeline() {
       id: 2,
       icon: 'https://via.placeholder.com/40',
       username: 'user2',
-      photo: 'https://fc.niziu.com/files/4/n120/public/assets/images/page/1st_anniversary/kuji/kuji_item01.jpg',
+      photo: 'https://via.placeholder.com/300',
       likes: 5,
       description: '大阪の夜景です。',
       timestamp: '2024-01-15T13:30:00'
