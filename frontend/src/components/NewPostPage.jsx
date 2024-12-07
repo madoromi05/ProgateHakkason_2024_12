@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { FaCamera } from 'react-icons/fa';
 import './NewPostPage.css';
 import CameraComp from './CameraComp';
@@ -60,7 +61,9 @@ function NewPostPage({ userId }) {
             });
             alert('投稿が完了しました！');
             navigate('/timeline');
+        navigate('/');
         } catch (error) {
+        console.error('---------------------',error);
             alert(error.response?.data?.error || 'エラーが発生しました');
         } finally {
             setIsSubmitting(false);
@@ -95,31 +98,33 @@ function NewPostPage({ userId }) {
                             </button>
                         </div>
 
-                        <div className="form-group">
-                            <label htmlFor="location">場所</label>
-                            <select
-                                id="location"
-                                value={formData.location}
-                                onChange={(e) => setFormData({...formData, location: e.target.value})}
-                                required
-                            >
-                                <option value="">選択してください</option>
-                                {prefectures.map(pref => (
-                                    <option key={pref} value={pref}>{pref}</option>
-                                ))}
-                            </select>
-                        </div>
+                    <div className="form-group">
+                        <label>
+                            <FaMapMarkerAlt className="input-icon" />
+                            ロケーション
+                        </label>
+                        <select
+                            value={formData.location}
+                            onChange={(e) => setFormData({...formData, location: e.target.value})}
+                            required
+                        >
+                            <option value="">都道府県を選択</option>
+                            {prefectures.map(prefecture => (
+                                <option key={prefecture} value={prefecture}>
+                                    {prefecture}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
 
-                        <div className="form-group">
-                            <label htmlFor="description">説明</label>
-                            <textarea
-                                id="description"
-                                value={formData.description}
-                                onChange={(e) => setFormData({...formData, description: e.target.value})}
-                                required
-                                placeholder="写真の説明を入力してください"
-                            />
-                        </div>
+                    <div className="form-group">
+                        <label>キャプション</label>
+                        <textarea
+                            value={formData.description}
+                            onChange={(e) => setFormData({...formData, description: e.target.value})}
+                            placeholder="写真の説明を入力してください（任意）"
+                        />
+                    </div>
 
                         <div className="form-buttons">
                             <button 

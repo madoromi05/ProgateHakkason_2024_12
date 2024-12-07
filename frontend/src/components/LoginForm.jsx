@@ -26,10 +26,10 @@ function LoginForm({ onLogin }) {
   return (
     <div className="login-form-container">
       <div className="form-content">
-        <h2>Login</h2>
+        <h2>ログイン</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="username">Username:</label>
+            <label htmlFor="username">ユーザー名:</label>
             <input
               type="text"
               id="username"
@@ -39,7 +39,7 @@ function LoginForm({ onLogin }) {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="password">Password:</label>
+            <label htmlFor="password">パスワード:</label>
             <input
               type="password"
               id="password"

@@ -7,22 +7,41 @@ from boto3.dynamodb.conditions import Key
 from dotenv import load_dotenv
 import os
 import uuid
+from dotenv import load_dotenv
+import logging
+import time
+
+load_dotenv()
+
+logging.basicConfig(level=logging.DEBUG)
 
 # Flask Setup
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})
 
-# 環境変数でDynamoDBリソースを取得
-dynamodb = boto3.resource('dynamodb')
+# DynamoDB Client
+dynamodb = boto3.resource(
+    'dynamodb',
+    region_name='us-west-2',
+    aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
+    aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
+    aws_session_token=os.getenv('AWS_SESSION_TOKEN')
+)
+# テーブル名Users
 table = dynamodb.Table('Users')
 
-load_dotenv()
-aws_access_key = os.getenv('AWS_ACCESS_KEY_ID')
-aws_secret_key = os.getenv('AWS_SECRET_ACCESS_KEY')
-aws_region = os.getenv('AWS_REGION')
+# S3 Client
+s3 = boto3.client(
+    's3',
+    region_name='us-west-2',
+    aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
+    aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
+    aws_session_token=os.getenv('AWS_SESSION_TOKEN'),
+)
+bucket_name = 'remap-posts'  # ここを実際のバケット名に置き換えてください
 
-#接続確認用
+# 接続確認用
 @app.route('/')
 def hello_world():
     return "Hello, World!"
@@ -39,6 +58,7 @@ def register():
 
     # パスワードをハッシュ化
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+
     # DynamoDB登録
     try:
         table.put_item(
@@ -62,15 +82,14 @@ def login():
     username = data['username']
     password = data['password']
 
-    # Supabaseからユーザーを取得
+    # DynamoDBからユーザーを取得
     try:
-        response = supabase.table('Users').select('*').eq('username', username).execute()
-        if not response.data:
+        response = table.get_item(Key={'username': username})
+        if 'Item' not in response:
             return jsonify({'error': 'User not found'}), 404
 
         # パスワードを検証
-        stored_password = response.data[0]['password']
-        user_id = response.data[0]['userId']
+        stored_password = response['Item']['password']
         if bcrypt.check_password_hash(stored_password, password):
             return jsonify({'message': 'Login successful'}), 200
         else:
@@ -80,6 +99,12 @@ def login():
 
 @app.route('/upload-photo', methods=['POST'])
 def upload_photo():
+    # 環境変数の確認
+    print('---------------------')
+    print(os.getenv('AWS_ACCESS_KEY_ID'))
+    print(os.getenv('AWS_SECRET_ACCESS_KEY'))
+    print(os.getenv('AWS_SESSION_TOKEN'))
+    print('---------------------')
     if 'file' not in request.files:
         return jsonify({'error': 'No file uploaded'}), 400
 
@@ -97,41 +122,59 @@ def upload_photo():
         unique_filename = f"{uuid.uuid4()}.{file_ext}"
         storage_path = f"photos/{unique_filename}"
 
-        # Supabaseストレージにアップロード
-        supabase.storage.from_('uploads').upload(storage_path, file)
-        public_url = f"https://oqppbujbkpyfaaxdqqjh.supabase.co/storage/v1/object/public/uploads/{storage_path}"
+        # S3にファイルをアップロード
+        s3.upload_fileobj(file, bucket_name, storage_path)
 
-        # SupabaseのPhotosテーブルに登録
-        response = supabase.table('Photos').insert({
-            'photoId': str(uuid.uuid4()),
-            'userId': user_id,
-            'location': location,
-            'description': description,
-            'imageUrl': public_url
-        }).execute()
+        # S3の公開URLを取得
+        public_url = f"https://{bucket_name}.s3.amazonaws.com/{storage_path}"
 
-        if response.status_code == 201:
-            return jsonify({'message': 'Photo uploaded successfully', 'imageUrl': public_url}), 201
-        else:
-            return jsonify({'error': response.error_message}), 500
+        # DynamoDBのPhotosテーブルに登録
+        table_photos = dynamodb.Table('Photos')
+        table_photos.put_item(
+            Item={
+                'photoId': str(uuid.uuid4()),
+                'userId': user_id,
+                'location': location,
+                'description': description,
+                'imageUrl': public_url,
+                'timestamp': int(time.time() * 1000)
+            }
+        )
+
+        return jsonify({'message': 'Photo uploaded successfully', 'imageUrl': public_url}), 201
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-    """
-    # DynamoDBからユーザーを取得
+
+@app.route('/photos', methods=['GET'])
+def get_photos():
     try:
-        response = table.get_item(Key={'username': username})
-        if 'Item' not in response:
-            return jsonify({'error': 'User not found'}), 404
-
-        # パスワードを検証
-        stored_password = response['Item']['password']
-        if bcrypt.check_password_hash(stored_password, password):
-            return jsonify({'message': 'Login successful'}), 200
-        else:
-            return jsonify({'error': 'Invalid password'}), 401
+        logging.debug("Attempting to scan Photos table")
+        table_photos = dynamodb.Table('Photos')
+        response = table_photos.scan()
+        photos = response.get('Items', [])
+        
+        # 各写真のS3 URLに署名付きURLを生成
+        for photo in photos:
+            if 'imageUrl' in photo:
+                # S3のオブジェクトキーを取得（URLからパスを抽出）
+                object_key = photo['imageUrl'].split('.com/')[-1]
+                # 署名付きURLを生成（有効期限1時間）
+                signed_url = s3.generate_presigned_url(
+                    'get_object',
+                    Params={
+                        'Bucket': bucket_name,
+                        'Key': object_key
+                    },
+                    ExpiresIn=3600
+                )
+                photo['imageUrl'] = signed_url
+                
+        logging.debug(f"Photos retrieved: {photos}")
+        return jsonify(photos), 200
     except Exception as e:
+        logging.error(f"Error in get_photos: {str(e)}")
         return jsonify({'error': str(e)}), 500
-    """
+
 @app.route('/posts/new',methods=['POST'])
 def post_photo():
     data = request.json
