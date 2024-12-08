@@ -10,9 +10,20 @@ import 'leaflet/dist/leaflet.css';
 function Profile() {
   const { user } = useUser();
   const [posts, setPosts] = useState([]);
+  const [profileData, setProfileData] = useState(null);
+  const defaultIcon = "https://via.placeholder.com/150";
 
   useEffect(() => {
     if (user) {
+      const fetchUserData = async () => {
+        try {
+          const response = await axios.get(`http://localhost:5000/user/${user.username}`);
+          setProfileData(response.data);
+        } catch (error) {
+          console.error('Error fetching user data:', error);
+        }
+      };
+
       const fetchUserPosts = async () => {
         try {
           const response = await axios.get(`http://localhost:5000/user/${user.username}/photos`);
@@ -24,27 +35,9 @@ function Profile() {
           console.error('Error fetching user posts:', error);
         }
       };
+
+      fetchUserData();
       fetchUserPosts();
-    } else {
-      // サンプルデータを設定
-      setPosts([
-        {
-          photoId: 'sample1',
-          imageUrl: 'https://via.placeholder.com/300',
-          location: 'Sample Location 1',
-          description: 'Sample Description 1',
-          latitude: 35.6895,
-          longitude: 139.6917
-        },
-        {
-          photoId: 'sample2',
-          imageUrl: 'https://via.placeholder.com/300',
-          location: 'Sample Location 2',
-          description: 'Sample Description 2',
-          latitude: 34.6937,
-          longitude: 135.5023
-        }
-      ]);
     }
   }, [user]);
 
@@ -54,7 +47,7 @@ function Profile() {
     <div className="profile-container">
       <div className="profile-header">
         <img 
-          src="https://ogre.natalie.mu/artist/48196/20230705/tanakakei_art202306.jpg" 
+          src={profileData?.profileIconUrl || defaultIcon}
           alt="プロフィール画像" 
           className="profile-image" 
         />
@@ -62,11 +55,11 @@ function Profile() {
           <h2>{user ? user.username : 'サンプルユーザー'}</h2>
           <div className="profile-stats">
             <span><strong>投稿</strong> {posts.length}</span>
-            <span><strong>フォロワー</strong> {user ? 100 : 'N/A'}</span>
-            <span><strong>フォロー中</strong> {user ? 150 : 'N/A'}</span>
+            <span><strong>フォロワー</strong> {user ? 0 : 'N/A'}</span>
+            <span><strong>フォロー中</strong> {user ? 0 : 'N/A'}</span>
           </div>
           <div className="profile-bio">
-            <p>{user ? '翔眞です。よろしくお願いします。' : 'これはサンプルユーザーのプロフィールです。'}</p>
+            <p>{profileData?.profileComment || 'プロフィールコメントはありません。'}</p>
           </div>
         </div>
       </div>

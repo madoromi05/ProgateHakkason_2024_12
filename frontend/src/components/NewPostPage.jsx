@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaCamera, FaMapMarkerAlt } from 'react-icons/fa';
 import './NewPostPage.css';
@@ -17,6 +17,8 @@ function NewPostPage() {
     });
     const [showCamera, setShowCamera] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [canPost, setCanPost] = useState(true);
+    const [remainingPosts, setRemainingPosts] = useState(3);
 
     const prefectures = [
         "北海道", "青森県", "岩手県", "宮城県", "秋田県", "山形県", "福島県",
@@ -27,6 +29,31 @@ function NewPostPage() {
         "徳島県", "香川県", "愛媛県", "高知県", "福岡県", "佐賀県", "長崎県",
         "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県"
     ];
+
+    useEffect(() => {
+        const checkPostLimit = async () => {
+            const username = localStorage.getItem('username');
+            if (!username) {
+                navigate('/login');
+                return;
+            }
+
+            try {
+                const response = await axios.get(`http://localhost:5000/check-post-limit/${username}`);
+                setCanPost(response.data.canPost);
+                setRemainingPosts(response.data.remainingPosts);
+                
+                if (!response.data.canPost) {
+                    alert('本日の投稿制限に達しました。明日また投稿してください。');
+                    navigate('/profile');
+                }
+            } catch (error) {
+                console.error('投稿制限の確認に失敗しました:', error);
+            }
+        };
+
+        checkPostLimit();
+    }, [navigate]);
 
     const handlePhotoCapture = (blob) => {
         setFormData({
@@ -50,7 +77,12 @@ function NewPostPage() {
     };
 
     const handleSubmit = async (e) => {
-        if (e) e.preventDefault();
+        e.preventDefault();
+        if (!canPost) {
+            alert('本日の投稿制限に達しました。明日また投稿してください。');
+            return;
+        }
+
         if (isSubmitting || !user) return;
 
         setIsSubmitting(true);
@@ -88,6 +120,11 @@ function NewPostPage() {
                     {!formData.imagePreview ? (
                         <div className="new-post-container">
                             <h2>新規投稿</h2>
+                            {canPost ? (
+                                <p className="remaining-posts">本日残り {remainingPosts} 回投稿できます</p>
+                            ) : (
+                                <p className="limit-reached">本日の投稿制限に達しました</p>
+                            )}
                             <div className="camera-start-container">
                                 <button 
                                     onClick={() => setShowCamera(true)}
@@ -101,6 +138,11 @@ function NewPostPage() {
                     ) : (
                         <div className="new-post-container">
                             <h2>新規投稿</h2>
+                            {canPost ? (
+                                <p className="remaining-posts">本日残り {remainingPosts} 回投稿できます</p>
+                            ) : (
+                                <p className="limit-reached">本日の投稿制限に達しました</p>
+                            )}
                             <div className="new-post-form">
                                 <div className="preview-container">
                                     <img 

@@ -251,3 +251,15 @@ h2 {
         transform: translateY(0);
     }
 }
+
+.remaining-posts {
+    color: #4CAF50;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.limit-reached {
+    color: #f44336;
+    font-weight: bold;
+    margin-bottom: 20px;
+}

@@ -10,6 +10,7 @@ import uuid
 from dotenv import load_dotenv
 import logging
 import time
+from datetime import datetime, timedelta
 
 load_dotenv()
 
@@ -119,6 +120,25 @@ def upload_photo():
         return jsonify({'error': 'Missing fields'}), 400
 
     try:
+        # 投稿制限をチェック
+        today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        response = photos_table.query(
+            IndexName='username-timestamp-index',
+            KeyConditionExpression='username = :username AND #ts >= :today',
+            ExpressionAttributeNames={
+                '#ts': 'timestamp'
+            },
+            ExpressionAttributeValues={
+                ':username': username,
+                ':today': int(today.timestamp())
+            }
+        )
+        
+        if len(response.get('Items', [])) >= 3:
+            return jsonify({
+                'error': '1日の投稿制限（3回）に達しました。明日また投稿してください。'
+            }), 400
+
         # ファイル名を一意に
         file_ext = file.filename.split('.')[-1]
         unique_filename = f"{uuid.uuid4()}.{file_ext}"
@@ -238,6 +258,36 @@ def post_photo():
             }
         )
         return jsonify({'message': 'Photo posted successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/check-post-limit/<username>', methods=['GET'])
+def check_post_limit(username):
+    try:
+        # 現在の日付の開始時刻（00:00:00）を取得
+        today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        
+        # 今日の投稿を検索
+        response = photos_table.query(
+            IndexName='username-timestamp-index',
+            KeyConditionExpression='username = :username AND #ts >= :today',
+            ExpressionAttributeNames={
+                '#ts': 'timestamp'
+            },
+            ExpressionAttributeValues={
+                ':username': username,
+                ':today': int(today.timestamp())
+            }
+        )
+        
+        posts_today = len(response.get('Items', []))
+        can_post = posts_today < 3
+        
+        return jsonify({
+            'canPost': can_post,
+            'postsToday': posts_today,
+            'remainingPosts': 3 - posts_today
+        })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
