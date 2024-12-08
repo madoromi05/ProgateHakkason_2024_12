@@ -4,9 +4,11 @@ import { FaCamera, FaMapMarkerAlt } from 'react-icons/fa';
 import './NewPostPage.css';
 import CameraComp from './CameraComp';
 import axios from 'axios';
+import { useUser } from '../UserContext';
 
-function NewPostPage({ userId }) {
+function NewPostPage() {
     const navigate = useNavigate();
+    const { user } = useUser();
     const [formData, setFormData] = useState({
         image: null,
         imagePreview: null,
@@ -49,14 +51,14 @@ function NewPostPage({ userId }) {
 
     const handleSubmit = async (e) => {
         if (e) e.preventDefault();
-        if (isSubmitting) return;
+        if (isSubmitting || !user) return;
 
         setIsSubmitting(true);
         const data = new FormData();
         data.append('file', formData.image);
         data.append('location', formData.location);
         data.append('description', formData.description);
-        data.append('userId', userId);
+        data.append('userId', user.username);
 
         try {
             await axios.post('http://localhost:5000/upload-photo', data, {
@@ -66,7 +68,7 @@ function NewPostPage({ userId }) {
             setIsSubmitting(false);
             navigate('/', { replace: true });
         } catch (error) {
-            console.error('---------------------',error);
+            console.error('---------------------', error);
             alert(error.response?.data?.error || 'エラーが発生しました');
             setIsSubmitting(false);
         }
@@ -115,24 +117,24 @@ function NewPostPage({ userId }) {
                                     </button>
                                 </div>
 
-                            <div className="form-group">
-                                <label>
-                            <FaMapMarkerAlt className="input-icon" />
-                            ロケーション
-                        </label>
-                                <select
-                                            value={formData.location}
-                                    onChange={(e) => setFormData({...formData, location: e.target.value})}
-                                    required
-                                >
-                                    <option value="">都道府県を選択</option>
-                                    {prefectures.map(prefecture => (
-                                        <option key={prefecture} value={prefecture}>
-                                    {prefecture}
-                                </option>
-                                    ))}
-                                </select>
-                            </div>
+                                <div className="form-group">
+                                    <label>
+                                        <FaMapMarkerAlt className="input-icon" />
+                                        ロケーション
+                                    </label>
+                                    <select
+                                        value={formData.location}
+                                        onChange={(e) => setFormData({...formData, location: e.target.value})}
+                                        required
+                                    >
+                                        <option value="">都道府県を選択</option>
+                                        {prefectures.map(prefecture => (
+                                            <option key={prefecture} value={prefecture}>
+                                                {prefecture}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
 
                                 <div className="form-group">
                                     <label htmlFor="description">説明</label>
