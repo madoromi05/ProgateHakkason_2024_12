@@ -6,42 +6,32 @@ import JapanMap from './JapanMap';
 
 
 function Profile() {
-  const { user } = useUser();
-  const [posts, setPosts] = useState([]);
-
-  useEffect(() => {
-    if (user) {
-      const fetchUserPosts = async () => {
-        try {
-          const response = await axios.get(`http://localhost:5000/user/${user.username}/photos`);
-          setPosts(response.data);
-        } catch (error) {
-          console.error('Error fetching user posts:', error);
-        }
-      };
-      fetchUserPosts();
-    } else {
-      // サンプルデータを設定
-      setPosts([
+    const [posts] = useState([
         {
-          photoId: 'sample1',
-          imageUrl: 'https://via.placeholder.com/300',
-          location: 'Sample Location 1',
-          description: 'Sample Description 1',
-          latitude: 35.6895,
-          longitude: 139.6917
+            id: 1,
+            imageUrl: 'https://via.placeholder.com/300',
+            location: '東京都',
+            description: '東京の風景',
+            date: '2024-01-20',
+            coordinates: [35.6895, 139.6917]
         },
         {
-          photoId: 'sample2',
-          imageUrl: 'https://via.placeholder.com/300',
-          location: 'Sample Location 2',
-          description: 'Sample Description 2',
-          latitude: 34.6937,
-          longitude: 135.5023
+            id: 2,
+            imageUrl: 'https://via.placeholder.com/300',
+            location: '大阪府',
+            description: '大阪の夜景',
+            date: '2024-01-19',
+            coordinates: [34.6937, 135.5023]
+        },
+        {
+            id: 3,
+            imageUrl: 'https://via.placeholder.com/300',
+            location: '北海道',
+            description: '北海道の自然',
+            date: '2024-01-18',
+            coordinates: [43.0667, 141.3500]
         }
-      ]);
-    }
-  }, [user]);
+    ]);
 
     return (
         <div className="profile-container">
@@ -102,7 +92,7 @@ function Profile() {
                 </div>
             </div>
         </div>
-      );
+    );
 }
 
 export default Profile;
