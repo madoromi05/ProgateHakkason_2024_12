@@ -5,6 +5,8 @@ export default defineConfig({
   ssr: {
     noExternal: ['react-icons'],
   },
+  plugins: [react()],
+  assetsInclude: ['**/*.topojson'],
 });
 
 /*
