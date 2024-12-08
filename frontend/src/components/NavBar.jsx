@@ -14,8 +14,10 @@ function NavBar() {
   };
 
   const handleLogout = () => {
-    setUser(null); // ユーザー情報をクリア
-    navigate('/login'); // ログインページにリダイレクト
+    if (window.confirm('本当にログアウトしますか？')) {
+      setUser(null);
+      navigate('/login');
+    }
   };
 
   return (
@@ -44,10 +46,10 @@ function NavBar() {
         </li>
         {user ? (
           <li>
-            <button onClick={handleLogout} className="logout-button">
+            <Link onClick={handleLogout} className="logout-button">
               <FaSignOutAlt className="nav-icon" />
               <span>Logout</span>
-            </button>
+            </Link>
           </li>
         ) : (
           <li className={isActive('/login')}>

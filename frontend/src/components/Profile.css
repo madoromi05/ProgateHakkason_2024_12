@@ -67,10 +67,18 @@
     font-weight: 600;
 }
 
-.view-all-link {
-    color: #ff4081;
+.view-all-button {
+    padding: 8px 16px;
+    background-color: #f0f0f0;
+    border-radius: 20px;
     text-decoration: none;
+    color: #333;
     font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.view-all-button:hover {
+    background-color: #e0e0e0;
 }
 
 .posts-grid {
@@ -118,7 +126,7 @@
 
 .post-info {
     text-align: center;
-    padding: 15px;
+    color: white;
 }
 
 .post-location {
@@ -126,8 +134,13 @@
     align-items: center;
     justify-content: center;
     gap: 5px;
-    margin: 0 0 8px 0;
+    margin: 0;
+    font-size: 16px;
     font-weight: 600;
+}
+
+.post-location svg {
+    font-size: 18px;
 }
 
 .post-description {

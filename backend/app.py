@@ -130,6 +130,9 @@ def upload_photo():
         # S3の公開URLを取得
         public_url = f"https://{bucket_name}.s3.amazonaws.com/{storage_path}"
 
+        # 現在のタイムスタンプをミリ秒単位で取得
+        current_timestamp = int(time.time() * 1000)
+
         # DynamoDBのPhotosテーブルに登録
         table_photos = dynamodb.Table('Photos')
         table_photos.put_item(
@@ -139,11 +142,15 @@ def upload_photo():
                 'location': location,
                 'description': description,
                 'imageUrl': public_url,
-                'timestamp': int(time.time() * 1000)
+                'timestamp': current_timestamp
             }
         )
 
-        return jsonify({'message': 'Photo uploaded successfully', 'imageUrl': public_url}), 201
+        return jsonify({
+            'message': 'Photo uploaded successfully', 
+            'imageUrl': public_url,
+            'timestamp': current_timestamp
+        }), 201
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -185,6 +192,23 @@ def get_user_photos(username):
             FilterExpression=Key('userId').eq(username)
         )
         photos = response.get('Items', [])
+        
+        # 各写真のS3 URLに署名付きURLを生成
+        for photo in photos:
+            if 'imageUrl' in photo:
+                # S3のオブジェクトキーを取得（URLからパスを抽出）
+                object_key = photo['imageUrl'].split('.com/')[-1]
+                # 署名付きURLを生成（有効期限1時間）
+                signed_url = s3.generate_presigned_url(
+                    'get_object',
+                    Params={
+                        'Bucket': bucket_name,
+                        'Key': object_key
+                    },
+                    ExpiresIn=3600
+                )
+                photo['imageUrl'] = signed_url
+        
         return jsonify(photos), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500

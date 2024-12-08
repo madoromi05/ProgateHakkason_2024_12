@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useUser } from '../UserContext';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer } from 'react-leaflet';
 import { FaMapMarkerAlt } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 import './Profile.css';
 import 'leaflet/dist/leaflet.css';
 
@@ -15,7 +16,10 @@ function Profile() {
       const fetchUserPosts = async () => {
         try {
           const response = await axios.get(`http://localhost:5000/user/${user.username}/photos`);
-          setPosts(response.data);
+          const sortedPosts = response.data.sort((a, b) => 
+            (b.timestamp || 0) - (a.timestamp || 0)
+          );
+          setPosts(sortedPosts);
         } catch (error) {
           console.error('Error fetching user posts:', error);
         }
@@ -44,6 +48,8 @@ function Profile() {
     }
   }, [user]);
 
+  const recentPosts = posts.slice(0, 3);
+
   return (
     <div className="profile-container">
       <div className="profile-header">
@@ -68,9 +74,17 @@ function Profile() {
       <div className="profile-section">
         <div className="section-header">
           <h3>最近の投稿</h3>
+          {user && posts.length > 3 && (
+            <Link 
+              to={`/posts/${user.username}`} 
+              className="view-all-button"
+            >
+              すべて見る
+            </Link>
+          )}
         </div>
         <div className="posts-grid">
-          {posts.map((post) => (
+          {recentPosts.map((post) => (
             <div key={post.photoId} className="post">
               <img src={post.imageUrl} alt={post.description} />
               <div className="post-overlay">
@@ -78,7 +92,6 @@ function Profile() {
                   <p className="post-location">
                     <FaMapMarkerAlt /> {post.location}
                   </p>
-                  <p className="post-description">{post.description}</p>
                 </div>
               </div>
             </div>
@@ -100,21 +113,6 @@ function Profile() {
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             />
-            {posts.map((post) => (
-              <Marker key={post.photoId} position={[post.latitude, post.longitude]}>
-                <Popup>
-                  <div className="popup-content">
-                    <img 
-                      src={post.imageUrl} 
-                      alt={post.description} 
-                      className="popup-image"
-                    />
-                    <p className="popup-location">{post.location}</p>
-                    <p className="popup-description">{post.description}</p>
-                  </div>
-                </Popup>
-              </Marker>
-            ))}
           </MapContainer>
         </div>
       </div>
