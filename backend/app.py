@@ -101,12 +101,6 @@ def login():
 
 @app.route('/upload-photo', methods=['POST'])
 def upload_photo():
-    # 環境変数の確認
-    print('---------------------')
-    print(os.getenv('AWS_ACCESS_KEY_ID'))
-    print(os.getenv('AWS_SECRET_ACCESS_KEY'))
-    print(os.getenv('AWS_SESSION_TOKEN'))
-    print('---------------------')
 
     if 'file' not in request.files:
         return jsonify({'error': 'No file uploaded'}), 400
@@ -164,6 +158,36 @@ def upload_photo():
                 'imageUrl': public_url,
                 'timestamp': current_timestamp
             }
+        )
+
+      # 都道府県リストのインデックスを取得
+        prefectures = [
+            "北海道", "青森県", "岩手県", "宮城県", "秋田県", "山形県", "福島県",
+            "茨城県", "栃木県", "群馬県", "埼玉県", "千葉県", "東京都", "神奈川県",
+            "新潟県", "富山県", "石川県", "福井県", "山梨県", "長野県", "岐阜県",
+            "静岡県", "愛知県", "三重県", "滋賀県", "京都府", "大阪府", "兵庫県",
+            "奈良県", "和歌山県", "鳥取県", "島根県", "岡山県", "広島県", "山口県",
+            "徳島県", "香川県", "愛媛県", "高知県", "福岡県", "佐賀県", "長崎県",
+            "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県"
+        ]
+        if location not in prefectures:
+            return jsonify({'error': 'Invalid location'}), 400
+
+        location_index = prefectures.index(location)
+
+        # Usersテーブルの `todoufukenn` を更新
+        response = table.get_item(Key={'username': user_id})
+        if 'Item' not in response:
+            return jsonify({'error': 'User not found'}), 404
+
+        user_item = response['Item']
+        todoufukenn = user_item.get('todoufukenn', [0] * 47)
+        todoufukenn[location_index] += 1
+
+        table.update_item(
+            Key={'username': user_id},
+            UpdateExpression="SET todoufukenn = :new_list",
+            ExpressionAttributeValues={':new_list': todoufukenn}
         )
 
         return jsonify({

@@ -5,7 +5,8 @@ import { MapContainer, TileLayer } from 'react-leaflet';
 import { FaMapMarkerAlt } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import './Profile.css';
-import 'leaflet/dist/leaflet.css';
+import JapanMap from './JapanMap';
+
 
 function Profile() {
   const { user } = useUser();
@@ -43,31 +44,32 @@ function Profile() {
 
   const recentPosts = posts.slice(0, 3);
 
-  return (
-    <div className="profile-container">
-      <div className="profile-header">
-        <img 
-          src={profileData?.profileIconUrl || defaultIcon}
-          alt="プロフィール画像" 
-          className="profile-image" 
-        />
-        <div className="profile-info">
-          <h2>{user ? user.username : 'サンプルユーザー'}</h2>
-          <div className="profile-stats">
-            <span><strong>投稿</strong> {posts.length}</span>
-            <span><strong>フォロワー</strong> {user ? 0 : 'N/A'}</span>
-            <span><strong>フォロー中</strong> {user ? 0 : 'N/A'}</span>
-          </div>
-          <div className="profile-bio">
-            <p>{profileData?.profileComment || 'プロフィールコメントはありません。'}</p>
-          </div>
-        </div>
-      </div>
+    return (
+        <div className="profile-container">
+            <div className="profile-header">
+                <img 
+                    src="https://via.placeholder.com/150" 
+                    alt="プロフィール画像" 
+                    className="profile-image" 
+                />
+                <div className="profile-info">
+                    <h2>UserName</h2>
+                    <div className="profile-stats">
+                        <span><strong>投稿</strong> {posts.length}</span>
+                        <span><strong>フォロワー</strong> 100</span>
+                        <span><strong>フォロー中</strong> 150</span>
+                    </div>
+                    <div className="profile-bio">
+                        <p>Profile-bio</p>
+                    </div>
+                </div>
+            </div>
 
-      <div className="profile-section">
-        <div className="section-header">
-          <h3>最近の投稿</h3>
-          {user && posts.length > 3 && (
+            <div className="profile-section">
+                <div className="section-header">
+                    <h3>最近の投稿</h3>
+                    <Link to="/posts" className="view-all-link">すべて見る</Link>
+                  {user && posts.length > 3 && (
             <Link 
               to={`/posts/${user.username}`} 
               className="view-all-button"
@@ -76,41 +78,39 @@ function Profile() {
             </Link>
           )}
         </div>
-        <div className="posts-grid">
-          {recentPosts.map((post) => (
-            <div key={post.photoId} className="post">
-              <img src={post.imageUrl} alt={post.description} />
-              <div className="post-overlay">
-                <div className="post-info">
-                  <p className="post-location">
-                    <FaMapMarkerAlt /> {post.location}
-                  </p>
+                <div className="posts-grid">
+                    {recentPosts.slice(0, 3).map((post) => (
+                        <div key={post.id} className="post">
+                            <img src={post.imageUrl} alt={post.description} />
+                            <div className="post-overlay">
+                                <div className="post-info">
+                                    <p className="post-location">
+                                        <FaMapMarkerAlt /> {post.location}
+                                    </p>
+                                                  </div>
+                            </div>
+                        </div>
+                    ))}
                 </div>
-              </div>
             </div>
-          ))}
-        </div>
-      </div>
 
-      <div className="profile-section">
-        <div className="section-header">
-          <h3>撮影場所</h3>
+            <div className="profile-section">
+                <div className="section-header">
+                    <h3>撮影場所</h3>
+                </div>
+                <div className="map-container">
+                    <JapanMap 
+                        posts={posts}
+                        onPrefectureClick={(prefecture) => {
+                            console.log(`選択された都道府県: ${prefName}`);
+                        }}
+                    />
+                        
+                      
+                </div>
+            </div>
         </div>
-        <div className="map-container">
-          <MapContainer 
-            center={[36.2048, 138.2529]} 
-            zoom={5} 
-            style={{ height: '400px', width: '100%' }}
-          >
-            <TileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            />
-          </MapContainer>
-        </div>
-      </div>
-    </div>
-  );
+    );
 }
 
 export default Profile;

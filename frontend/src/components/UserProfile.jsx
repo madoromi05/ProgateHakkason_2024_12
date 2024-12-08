@@ -7,36 +7,36 @@ import './Profile.css';
 import 'leaflet/dist/leaflet.css';
 
 function UserProfile() {
-  const { username } = useParams();
-  const [posts, setPosts] = useState([]);
-  const [profileData, setProfileData] = useState(null);
-  const defaultIcon = "https://via.placeholder.com/150";
+    const { username } = useParams();
+    const [isFollowing, setIsFollowing] = useState(false);
+    
+    const [userData] = useState({
+        username: username,
+        profileImage: 'https://via.placeholder.com/150',
+        followers: 234,
+        following: 156,
+        bio: 'Photography enthusiast',
+        posts: [
+            {
+                id: 1,
+                imageUrl: 'https://via.placeholder.com/300',
+                location: 'Tokyo',
+                description: 'Tokyo Landscape',
+                //coordinates: [35.6895, 139.6917]
+            },
+            {
+                id: 2,
+                imageUrl: 'https://via.placeholder.com/300',
+                location: 'Osaka',
+                description: 'Osaka Night View',
+                //coordinates: [34.6937, 135.5023]
+            }
+        ]
+    });
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await axios.get(`http://localhost:5000/user/${username}`);
-        setProfileData(response.data);
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      }
+    const handleFollow = () => {
+        setIsFollowing(!isFollowing);
     };
-
-    const fetchUserPosts = async () => {
-      try {
-        const response = await axios.get(`http://localhost:5000/user/${username}/photos`);
-        const sortedPosts = response.data.sort((a, b) => 
-          (b.timestamp || 0) - (a.timestamp || 0)
-        );
-        setPosts(sortedPosts);
-      } catch (error) {
-        console.error('Error fetching user posts:', error);
-      }
-    };
-
-    fetchUserData();
-    fetchUserPosts();
-  }, [username]);
 
   return (
     <div className="profile-container">
