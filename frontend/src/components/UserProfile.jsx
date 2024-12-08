@@ -30,14 +30,14 @@ function UserProfile() {
                 imageUrl: 'https://via.placeholder.com/300',
                 location: 'Tokyo',
                 description: 'Tokyo Landscape',
-                coordinates: [35.6895, 139.6917]
+                //coordinates: [35.6895, 139.6917]
             },
             {
                 id: 2,
                 imageUrl: 'https://via.placeholder.com/300',
                 location: 'Osaka',
                 description: 'Osaka Night View',
-                coordinates: [34.6937, 135.5023]
+                //coordinates: [34.6937, 135.5023]
             }
         ]
     });
