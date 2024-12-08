@@ -32,6 +32,9 @@ dynamodb = boto3.resource(
 # テーブル名Users
 table = dynamodb.Table('Users')
 
+# DynamoDBのテーブル定義を追加
+photos_table = dynamodb.Table('Photos')
+
 # S3 Client
 s3 = boto3.client(
     's3',
@@ -101,38 +104,15 @@ def login():
 
 @app.route('/upload-photo', methods=['POST'])
 def upload_photo():
-
     if 'file' not in request.files:
         return jsonify({'error': 'No file uploaded'}), 400
 
     file = request.files['file']
     location = request.form.get('location')
     description = request.form.get('description')
-    user_id = request.form.get('userId')
-
-    if not all([file, location, description, user_id]):
-        return jsonify({'error': 'Missing fields'}), 400
+    username = request.form.get('userId')
 
     try:
-        # 投稿制限をチェック
-        today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-        response = photos_table.query(
-            IndexName='username-timestamp-index',
-            KeyConditionExpression='username = :username AND #ts >= :today',
-            ExpressionAttributeNames={
-                '#ts': 'timestamp'
-            },
-            ExpressionAttributeValues={
-                ':username': username,
-                ':today': int(today.timestamp())
-            }
-        )
-        
-        if len(response.get('Items', [])) >= 3:
-            return jsonify({
-                'error': '1日の投稿制限（3回）に達しました。明日また投稿してください。'
-            }), 400
-
         # ファイル名を一意に
         file_ext = file.filename.split('.')[-1]
         unique_filename = f"{uuid.uuid4()}.{file_ext}"
@@ -152,7 +132,7 @@ def upload_photo():
         table_photos.put_item(
             Item={
                 'photoId': str(uuid.uuid4()),
-                'userId': user_id,
+                'userId': username,
                 'location': location,
                 'description': description,
                 'imageUrl': public_url,
@@ -176,7 +156,7 @@ def upload_photo():
         location_index = prefectures.index(location)
 
         # Usersテーブルの `todoufukenn` を更新
-        response = table.get_item(Key={'username': user_id})
+        response = table.get_item(Key={'username': username})
         if 'Item' not in response:
             return jsonify({'error': 'User not found'}), 404
 
@@ -185,7 +165,7 @@ def upload_photo():
         todoufukenn[location_index] += 1
 
         table.update_item(
-            Key={'username': user_id},
+            Key={'username': username},
             UpdateExpression="SET todoufukenn = :new_list",
             ExpressionAttributeValues={':new_list': todoufukenn}
         )
@@ -288,19 +268,17 @@ def post_photo():
 @app.route('/check-post-limit/<username>', methods=['GET'])
 def check_post_limit(username):
     try:
-        # 現在の日付の開始時刻（00:00:00）を取得
         today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        today_timestamp = int(today.timestamp() * 1000)
         
-        # 今日の投稿を検索
-        response = photos_table.query(
-            IndexName='username-timestamp-index',
-            KeyConditionExpression='username = :username AND #ts >= :today',
+        response = photos_table.scan(
+            FilterExpression='userId = :username AND #ts >= :today',
             ExpressionAttributeNames={
                 '#ts': 'timestamp'
             },
             ExpressionAttributeValues={
                 ':username': username,
-                ':today': int(today.timestamp())
+                ':today': today_timestamp
             }
         )
         
@@ -312,6 +290,26 @@ def check_post_limit(username):
             'postsToday': posts_today,
             'remainingPosts': 3 - posts_today
         })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/user/<username>', methods=['GET'])
+def get_user(username):
+    try:
+        # ユーザー情報を取得
+        response = table.get_item(Key={'username': username})
+        
+        if 'Item' not in response:
+            return jsonify({'error': 'User not found'}), 404
+            
+        user_data = response['Item']
+        
+        # パスワードハッシュは除外
+        if 'password' in user_data:
+            del user_data['password']
+            
+        return jsonify(user_data), 200
+        
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

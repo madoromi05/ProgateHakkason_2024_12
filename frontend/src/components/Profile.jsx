@@ -48,14 +48,17 @@ function Profile() {
         <div className="profile-container">
             <div className="profile-header">
                 <img 
-                    src="https://via.placeholder.com/150" 
+                    src="https://via.placeholder.com/100" 
                     alt="プロフィール画像" 
                     className="profile-image" 
                 />
                 <div className="profile-info">
-                    <h2>UserName</h2>
+                    <h2>{user?.username || 'ユーザー名'}</h2>
                     <div className="profile-stats">
-                        <span><strong>投稿</strong> {posts.length}</span>
+                        <div className="stat">
+                            <span className="stat-value">{posts.length}</span>
+                            <span className="stat-label">投稿</span>
+                        </div>
                         <span><strong>フォロワー</strong> 100</span>
                         <span><strong>フォロー中</strong> 150</span>
                     </div>

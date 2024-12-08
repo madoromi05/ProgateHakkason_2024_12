@@ -22,7 +22,6 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/user/:username" element={<UserProfile />} />
             <Route path="/posts/new" element={<NewPostPage />} />
-            <Route path="/posts/:username" element={<AllPosts />} />
             <Route path="/login" element={<LoginForm />} />
             <Route path="/register" element={<RegisterForm />} />
           </Routes>
