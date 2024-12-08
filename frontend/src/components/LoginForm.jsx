@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '../UserContext';
 import './LoginForm.css';
 
-function LoginForm({ onLogin }) {
+function LoginForm() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const { setUser } = useUser();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -15,9 +17,11 @@ function LoginForm({ onLogin }) {
         username,
         password,
       });
-      alert(response.data.message);
-      onLogin();
-      navigate('../timeline');
+      if (response.status === 200) {
+        alert(response.data.message);
+        setUser({ username });
+        navigate('/');
+      }
     } catch (error) {
       alert(error.response.data.error || 'An error occurred');
     }

@@ -176,28 +176,46 @@ def get_photos():
     except Exception as e:
         logging.error(f"Error in get_photos: {str(e)}")
         return jsonify({'error': str(e)}), 500
-"""
-@app.route('/posts/new',methods=['POST'])
+
+@app.route('/user/<username>/photos', methods=['GET'])
+def get_user_photos(username):
+    try:
+        table_photos = dynamodb.Table('Photos')
+        response = table_photos.scan(
+            FilterExpression=Key('userId').eq(username)
+        )
+        photos = response.get('Items', [])
+        return jsonify(photos), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/posts/new', methods=['POST'])
 def post_photo():
     data = request.json
-    username = data['username']
-    photo_url = data['photo_url']
-    prefecture = data['prefecture']
+    username = data.get('username')
+    photo_url = data.get('photo_url')
+    location = data.get('location')
+    description = data.get('description')
+
+    if not all([username, photo_url, location, description]):
+        return jsonify({'error': 'Missing fields'}), 400
 
     try:
-        response = table.update_item(
-            Key={'username': username},
-            UpdateExpression="SET photos = list_append(if_not_exists(photos, :empty_list), :photo), prefectures = list_append(if_not_exists(prefectures, :empty_list), :prefecture)",
-            ExpressionAttributeValues={
-                ':photo': [photo_url],
-                ':prefecture': [prefecture],
-                ':empty_list': []
-            },
-            ReturnValues="UPDATED_NEW"
+        # DynamoDBのPhotosテーブルに投稿を保存
+        table_photos = dynamodb.Table('Photos')
+        table_photos.put_item(
+            Item={
+                'photoId': str(uuid.uuid4()),
+                'userId': username,
+                'location': location,
+                'description': description,
+                'imageUrl': photo_url,
+                'timestamp': int(time.time() * 1000)
+            }
         )
         return jsonify({'message': 'Photo posted successfully'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-"""
+
 if __name__ == '__main__':
     app.run(debug=True)
